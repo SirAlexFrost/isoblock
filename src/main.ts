@@ -9,7 +9,7 @@ const app = new PIXI.Application({
     backgroundAlpha: 0,
 });
 
-const world: Map<string, Tile> = new Map();
+const world: Tile[] = [];
 
 const graphic = new PIXI.Graphics();
 
@@ -42,17 +42,19 @@ const screenToWorld = (x: number, y: number) => {
     return { x: isoX, y: isoY }
 }
 
+const getWorldTile = (x: number, y: number) => {
+    return world.filter(tile => tile.x === x && tile.y === y)[0] ?? null;
+}
+
 window.addEventListener('click', (e) => {
     const worldPos = screenToWorld(e.x, e.y);
 
-    const coordString = `${worldPos.x}|${worldPos.y}`;
-
-    const tile = world.get(coordString);
+    const tile = getWorldTile(worldPos.x, worldPos.y);
 
     if (tile) {
         tile.type = tile.type === 'void' ? 'dirt' : 'void';
     } else {
-        world.set(coordString, new Tile('dirt', worldPos.x, worldPos.y));
+        world.push(new Tile('dirt', worldPos.x, worldPos.y));
     }
 
     renderWorld();
