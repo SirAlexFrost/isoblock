@@ -1,7 +1,7 @@
 import './style.css'
 
 import * as PIXI from 'pixi.js';
-import { Tile } from './tile';
+import { Tile, TileType } from './tile';
 
 const app = new PIXI.Application({
     background: '#000000',
@@ -46,6 +46,18 @@ const getWorldTile = (x: number, y: number) => {
     return world.filter(tile => tile.x === x && tile.y === y)[0] ?? null;
 }
 
+const createWorldTile = (x: number, y: number, type: TileType) => {
+    const tile = getWorldTile(x, y);
+
+    // Allow new type, but prevent entry duplication
+    if (tile) {
+        tile.type = type
+        return;
+    };
+
+    world.push(new Tile(type, x, y));
+}
+
 window.addEventListener('click', (e) => {
     const worldPos = screenToWorld(e.x, e.y);
 
@@ -54,7 +66,7 @@ window.addEventListener('click', (e) => {
     if (tile) {
         tile.type = tile.type === 'void' ? 'dirt' : 'void';
     } else {
-        world.push(new Tile('dirt', worldPos.x, worldPos.y));
+        createWorldTile(worldPos.x, worldPos.y, 'dirt');
     }
 
     renderWorld();
